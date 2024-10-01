@@ -32,6 +32,34 @@ impl proto::calculator_server::Calculator for CalculatorService {
 
         Ok(tonic::Response::new(response))
     }
+    async fn divide(
+        &self,
+        request: tonic::Request<proto::CalculationRequest>,
+    ) -> anyhow::Result<
+        tonic::Response<proto::CalculationResponse>,
+        tonic::Status,
+    > {
+        eprintln!("Received 'divide' request: {:?}", request);
+
+        let input = request.get_ref();
+
+        if input.b == 0 {
+            eprintln!("Division by zero is not allowed");
+            return Err(tonic::Status::invalid_argument(
+                "Division by zero is not allowed",
+            ));
+        }
+
+        eprintln!("Calculating quotient: {} / {}", input.a, input.b);
+
+        let response = proto::CalculationResponse {
+            response: input.a / input.b,
+        };
+
+        eprintln!("Sending response: {:?}", response);
+
+        Ok(tonic::Response::new(response))
+    }
 }
 
 #[tokio::main]
